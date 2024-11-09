@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import Auth from "../components/Auth";
 
 interface ChallengeCardProps {
   title: string
@@ -30,6 +31,9 @@ interface NotificationItemProps {
 export default function Component() {
   return (
     <div className="bg-background min-h-screen">
+      <div>
+      <Auth />
+    </div>
       {/* Profile Header */}
       <div className="p-4 flex items-center gap-4 border-b">
         <Avatar className="h-12 w-12">
