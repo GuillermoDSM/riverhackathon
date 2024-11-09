@@ -2,14 +2,20 @@
 import { IProvider } from "@web3auth/base";
 import { ethers } from "ethers";
 
+type Eip1193Provider = {
+    request(args: { method: string; params?: Array<any> }): Promise<any>;
+  };
+  
+
 export default class RPC {
-  provider: ethers.BrowserProvider.Web3Provider;
+  provider: ethers.BrowserProvider;
+
   constructor(provider: IProvider) {
-    this.provider = new ethers.BrowserProvider.Web3Provider(provider);
+    this.provider = new ethers.BrowserProvider(provider as unknown as Eip1193Provider);
   }
 
   async getAccounts() {
-    const signer = this.provider.getSigner();
+    const signer = await this.provider.getSigner();
     return await signer.getAddress();
   }
 
@@ -19,10 +25,10 @@ export default class RPC {
   }
 
   async sendTransaction() {
-    const signer = this.provider.getSigner();
+    const signer = await this.provider.getSigner();
     const tx = await signer.sendTransaction({
       to: "0xYourRecipientAddress",
-      value: ethers.utils.parseEther("0.01"),
+      value: ethers.parseEther("0.01"),  // Use `parseEther` directly
     });
     return tx;
   }
