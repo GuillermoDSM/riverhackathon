@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Auth from "../components/Auth";
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 interface ChallengeCardProps {
   title: string
@@ -21,6 +23,7 @@ interface ChallengeCardProps {
 }
 
 interface NotificationItemProps {
+  id: number
   type: 'xp' | 'badge' | 'achievement' | 'challenge'
   title: string
   description: string
@@ -212,11 +215,18 @@ function ChallengesContent() {
   )
 }
 
-function ChallengeCard({ title, description, reward, participants, image }: ChallengeCardProps) {
+function ChallengeCard({ id, title, description, reward, participants, image }: ChallengeCardProps) {
+  const router = useRouter()
+  
   return (
     <Card className="overflow-hidden">
       <div className="aspect-video relative">
-        <img src={image} alt={title} className="object-cover w-full h-full" />
+        <Image 
+          src={image} 
+          alt={title} 
+          fill
+          className="object-cover"
+        />
         <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
           {reward} XP
         </Badge>
@@ -231,7 +241,9 @@ function ChallengeCard({ title, description, reward, participants, image }: Chal
             </Avatar>
             <span className="text-sm text-muted-foreground">{participants} participants</span>
           </div>
-          <Button size="sm">Start Challenge</Button>
+          <Button size="sm" onClick={() => router.push(`/challenge/${id}`)}>
+            Start Challenge
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -288,50 +300,19 @@ const challenges = [
     id: 1,
     title: "Water Quality Basics",
     description: "Learn the fundamentals of water quality monitoring and analysis.",
-    reward: 500,
+    reward: 100,
     participants: 1234,
     image: "/images/challenges/water-quality-basics.png",
   },
-  {
+    {
     id: 2,
-    title: "Advanced Sensor Deployment",
-    description: "Master the art of deploying water quality sensors in various environments.",
-    reward: 750,
-    participants: 876,
-    image: "/water-sensor.jpg",
-  },
-  {
-    id: 3,
-    title: "Data Analysis Workshop",
-    description: "Dive deep into analyzing and interpreting water quality data.",
-    reward: 600,
-    participants: 2345,
-    image: "/placeholder.svg?height=180&width=320",
-  },
-  {
-    id: 4,
     title: "Community Outreach Program",
     description: "Learn how to engage local communities in water quality initiatives.",
-    reward: 550,
+    reward: 300,
     participants: 543,
-    image: "/placeholder.svg?height=180&width=320",
+    image: "/images/challenges/community-outreach.jpg",
   },
-  {
-    id: 5,
-    title: "Environmental Impact Assessment",
-    description: "Understand how to assess the environmental impact of water quality changes.",
-    reward: 800,
-    participants: 987,
-    image: "/placeholder.svg?height=180&width=320",
-  },
-  {
-    id: 6,
-    title: "Water Conservation Techniques",
-    description: "Explore innovative techniques for water conservation and management.",
-    reward: 700,
-    participants: 1567,
-    image: "/placeholder.svg?height=180&width=320",
-  },
+ 
 ]
 
 const topUsers = [
@@ -347,7 +328,7 @@ const topUsers = [
   { id: 10, name: "William Lee", level: 4, xp: 1490, avatar: "/placeholder.svg?height=32&width=32" },
 ]
 
-const notifications = [
+const notifications: NotificationItemProps[] = [
   {
     id: 1,
     type: 'xp',
