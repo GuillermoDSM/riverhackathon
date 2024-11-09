@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 interface ChallengeCardProps {
   title: string
@@ -20,6 +22,7 @@ interface ChallengeCardProps {
 }
 
 interface NotificationItemProps {
+  id: number
   type: 'xp' | 'badge' | 'achievement' | 'challenge'
   title: string
   description: string
@@ -208,11 +211,18 @@ function ChallengesContent() {
   )
 }
 
-function ChallengeCard({ title, description, reward, participants, image }: ChallengeCardProps) {
+function ChallengeCard({ id, title, description, reward, participants, image }: ChallengeCardProps) {
+  const router = useRouter()
+  
   return (
     <Card className="overflow-hidden">
       <div className="aspect-video relative">
-        <img src={image} alt={title} className="object-cover w-full h-full" />
+        <Image 
+          src={image} 
+          alt={title} 
+          fill
+          className="object-cover"
+        />
         <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
           {reward} XP
         </Badge>
@@ -227,7 +237,9 @@ function ChallengeCard({ title, description, reward, participants, image }: Chal
             </Avatar>
             <span className="text-sm text-muted-foreground">{participants} participants</span>
           </div>
-          <Button size="sm">Start Challenge</Button>
+          <Button size="sm" onClick={() => router.push(`/challenge/${id}`)}>
+            Start Challenge
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -312,7 +324,7 @@ const topUsers = [
   { id: 10, name: "William Lee", level: 4, xp: 1490, avatar: "/placeholder.svg?height=32&width=32" },
 ]
 
-const notifications = [
+const notifications: NotificationItemProps[] = [
   {
     id: 1,
     type: 'xp',
