@@ -4,22 +4,48 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { Web3Auth } from '@web3auth/modal';
 import { initializeWeb3Auth } from '@/lib/web3auth';
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  user: any | null;
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
-  web3auth: Web3Auth | null;
+interface UserData {
+  name: string
+  email: string
+  xp: number
+  level: number
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextType {
+  isAuthenticated: boolean
+  user: UserData | null
+  isLoading: boolean
+  login: () => Promise<void>
+  logout: () => Promise<void>
+  updateUserXP: (newXP: number) => Promise<void>
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [web3auth, setWeb3Auth] = useState<Web3Auth | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<UserData | null>(null)
+  const [web3auth, setWeb3Auth] = useState<Web3Auth | null>(null)
+
+  const updateUserXP = async (newXP: number) => {
+    if (!web3auth?.connected) return
+
+    const userInfo = await web3auth.getUserInfo()
+    const updatedUserData = {
+      name: userInfo.name || 'Anonymous User',
+      email: userInfo.email || '',
+      xp: newXP,
+      level: Math.floor(newXP / 1000) + 1
+    }
+
+    await web3auth.setUserMetadata({
+      ...userInfo,
+      xp: newXP.toString()
+    })
+
+    setUser(updatedUserData)
+  }
 
   useEffect(() => {
     const init = async () => {
@@ -82,25 +108,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        isAuthenticated, 
-        isLoading, 
-        user, 
-        login, 
-        logout, 
-        web3auth 
-      }}
-    >
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      user,
+      isLoading,
+      login,
+      logout,
+      updateUserXP
+    }}>
       {children}
     </AuthContext.Provider>
-  );
+  )
 }
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
   }
-  return context;
-}; 
+  return context
+} 

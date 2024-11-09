@@ -13,7 +13,9 @@ export function UserProfile() {
         </Avatar>
         <div>
           <h2 className="font-semibold">{user?.name || 'Anonymous User'}</h2>
-          <p className="text-sm text-muted-foreground">Level 4: 1343 XP</p>
+          <p className="text-sm text-muted-foreground">
+            Level {user?.level || 1}: {user?.xp || 0} XP
+          </p>
         </div>
       </div>
       <Button variant="outline" onClick={logout}>Disconnect</Button>
