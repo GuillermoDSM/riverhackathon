@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 
 export function UserProfile() {
   const { user, logout } = useAuth();
- console.log("User profile", user);
+
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-4">
