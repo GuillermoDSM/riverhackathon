@@ -50,9 +50,10 @@ const MintAchievement = ({ challengeId, wallet, metadata }: MintProps) => {
 
       const metadataUri = `https://gateway.pinata.cloud/ipfs/${metadataIpfsHash}`;
       console.log("metadataIpfsHash", metadataIpfsHash);
+      console.log("metadataUri", metadataUri)
 
       // Mint NFT with IPFS metadata URI
-      const tokenId = await mintNFT("rQEWwQALcEjkUFuxKH9VzsK4CFkCRBw9Bk", metadataUri);
+      const tokenId = await mintNFT( metadataUri);
 
       if (tokenId) {
         setNftTokenId(tokenId.toString());
