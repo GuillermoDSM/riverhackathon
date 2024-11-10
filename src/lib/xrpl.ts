@@ -15,7 +15,7 @@ export const mintNFT = async (metadataUri: string) => {
   const transactionBlob:NFTokenMint = {
     TransactionType: "NFTokenMint",
     Account: receiver.address,
-    URI: convertStringToHex(String(metadataUri)),
+    URI: (String(metadataUri)),
     Flags: 8, // this makes the nft transferable to others
     TransferFee: 10,
     Fee: "10",
