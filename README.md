@@ -1,4 +1,5 @@
 # Rivepulse gamification
+RiverPulse empowers communities to monitor and protect local water resources through accessible, open-source, and cost-effective water quality monitoring. With affordable devices, RiverPulse enables anyone to contribute to environmental health and safety, fostering community-driven protection of water resources.
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
