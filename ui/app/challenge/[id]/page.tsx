@@ -1,89 +1,68 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import { ArrowLeft, ArrowRight, ChevronLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import * as React from 'react';
+import { ArrowLeft, ArrowRight, ChevronLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { initializeWeb3Auth } from '../../../lib/web3auth';
+import MintAchievement from '../../../components/Mint';
+import { uploadImageAndMetadataToIPFS } from '../../../lib/ipfs';
 
-// Mock challenges data
+// Types pour MintAchievement
+interface MintProps {
+  challengeId: number;
+  wallet: any;
+  imageFile: File;
+  metadata: any;
+}
+
+// Props de ChallengeContent
+interface ChallengeContentProps {
+  type: 'text' | 'image' | 'video' | 'button';
+  content: string;
+}
+
 const challenges = [
   {
     id: 1,
     title: "Water Quality Basics",
     description: "Learn the fundamentals of water quality testing",
     content: [
-      {
-        type: "text" as const,
-        content: "Welcome to Water Quality Basics. In this challenge, you'll learn how to test water quality effectively."
-      },
-      {
-        type: "image" as const,
-        content: "/images/water-testing.jpg"
-      },
-      {
-        type: "text" as const,
-        content: "Congratulations! You've successfully completed the Water Quality Basics challenge. You've learned valuable skills in water quality testing and analysis."
-      },
-      {
-        type: "button" as const,
-        content: "Mint Achievement NFT"
-      }
+      { type: "text" as const, content: "Welcome to Water Quality Basics. In this challenge, you'll learn how to test water quality effectively." },
+      { type: "image" as const, content: "/images/water-testing.jpg" },
+      { type: "text" as const, content: "Congratulations! You've successfully completed the Water Quality Basics challenge. You've learned valuable skills in water quality testing and analysis." },
+      { type: "button" as const, content: "Mint Achievement NFT" }
     ]
   },
-  {
-    id: 2,
-    title: "Community Challenge",
-    description: "Learn the fundamentals of water quality testing",
-    content: [
-      {
-        type: "text" as const,
-        content: "Welcome to Water Quality Basics. In this challenge, you'll learn how to test water quality effectively."
-      },
-      {
-        type: "video" as const,
-        content: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Replace with your actual YouTube video URL
-      },
-      {
-        type: "text" as const,
-        content: "Congratulations! You've successfully completed the Water Quality Basics challenge. You've learned valuable skills in water quality testing and analysis."
-      },
-      {
-        type: "button" as const,
-        content: "Mint Achievement NFT"
-      }
-    ]
-  },
-  // Add more challenges as needed
-]
+  // Ajoutez d'autres challenges si nécessaire
+];
 
 interface Challenge {
-  id: number
-  title: string
-  description: string
-  content: {
-    type: 'text' | 'image' | 'video' | 'button'
-    content: string
-  }[]
+  id: number;
+  title: string;
+  description: string;
+  content: ChallengeContentProps[];
 }
 
 export default function ChallengePage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const [currentPage, setCurrentPage] = React.useState(0)
-  const [challenge, setChallenge] = React.useState<Challenge | null>(null)
+  const router = useRouter();
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [challenge, setChallenge] = React.useState<Challenge | null>(null);
+  const wallet = initializeWeb3Auth();
 
   React.useEffect(() => {
-    const challengeData = challenges.find(c => c.id === parseInt(params.id))
+    const challengeData = challenges.find(c => c.id === parseInt(params.id));
     if (!challengeData) {
-      console.warn(`Challenge with id ${params.id} not found`)
-      router.push('/challenges') // Redirect to challenges page if not found
-      return
+      console.warn(`Challenge with id ${params.id} not found`);
+      router.push('/challenges');
+      return;
     }
-    setChallenge(challengeData)
-  }, [params.id, router])
+    setChallenge(challengeData);
+  }, [params.id, router]);
 
-  if (!challenge) return null
+  if (!challenge) return null;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -96,7 +75,13 @@ export default function ChallengePage({ params }: { params: { id: string } }) {
       </div>
 
       <div className="flex-1 p-6 flex items-center justify-center">
-        <ChallengeContent {...challenge.content[currentPage]} />
+        <ChallengeContent 
+          {...challenge.content[currentPage]} 
+          challengeId={challenge.id}
+          wallet={wallet}
+          imageFile={new File(["sample"], "sample.jpg")}  // Remplacez par une image réelle
+          metadata={{ title: challenge.title, description: challenge.description }}
+        />
       </div>
 
       <div className="border-t p-4">
@@ -125,13 +110,13 @@ export default function ChallengePage({ params }: { params: { id: string } }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-function ChallengeContent({ type, content }: ChallengeContentProps) {
+function ChallengeContent({ type, content, challengeId, wallet, imageFile, metadata }: ChallengeContentProps & MintProps) {
   switch (type) {
     case 'text':
-      return <div className="prose max-w-2xl">{content}</div>
+      return <div className="prose max-w-2xl">{content}</div>;
     case 'image':
       return (
         <Image 
@@ -141,10 +126,10 @@ function ChallengeContent({ type, content }: ChallengeContentProps) {
           height={378}
           className="max-w-2xl rounded-lg"
         />
-      )
+      );
     case 'video':
-      const videoId = content.split('v=')[1]
-      const embedUrl = `https://www.youtube.com/embed/${videoId}`
+      const videoId = content.split('v=')[1];
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
       return (
         <div className="aspect-video w-full max-w-2xl">
           <iframe
@@ -154,18 +139,18 @@ function ChallengeContent({ type, content }: ChallengeContentProps) {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           />
         </div>
-      )
+      );
     case 'button':
       return (
-        <Button 
-          size="lg" 
-          className="mt-4"
-          onClick={() => console.log('Minting NFT...')}
-        >
-          {content}
-        </Button>
-      )
+        <MintAchievement 
+          challengeId={challengeId}
+          wallet={"rQEWwQALcEjkUFuxKH9VzsK4CFkCRBw9Bk"}
+          imageFile={imageFile}
+          metadata={metadata}
+        /> 
+
+      );
     default:
-      return null
+      return null;
   }
-} 
+}

@@ -1,26 +1,31 @@
-import {Client, NFTokenMint, Payment, xrpToDrops, convertStringToHex,TransactionMetadata} from 'xrpl';
+import {Client, NFTokenMint, Payment, xrpToDrops,Wallet, convertStringToHex,TransactionMetadata} from 'xrpl';
 
 //  You start by importing IProvider type from web3auth/base for our typescript
 import { IProvider } from "@web3auth/base";
 
 
-export const mintNFT = async (wallet: any, metadataUri: string) => {
+export const mintNFT = async (metadataUri: string) => {
     const xrplClient = new Client("wss://s.altnet.rippletest.net:51233");
     await xrplClient.connect();
 
+    const receiverSeed = "sEdVMCyp8YTvDXpU9jchFBcNaXE8suk"
+
+  const receiver = Wallet.fromSeed(receiverSeed);
+
   const transactionBlob:NFTokenMint = {
     TransactionType: "NFTokenMint",
-    Account: wallet.address as any,
+    Account: receiver.address,
     URI: convertStringToHex(String(metadataUri)),
     Flags: 8, // this makes the nft transferable to others
     TransferFee: 10,
     Fee: "10",
     NFTokenTaxon: 0,
+    URI = 
   };
 
     
   const cstPreparedOffer = await xrplClient.autofill(transactionBlob);
-  const tsSignedOffer = wallet.sign(cstPreparedOffer);
+  const tsSignedOffer = receiver.sign(cstPreparedOffer);
   const tsResultOffer = await xrplClient.submitAndWait(tsSignedOffer.tx_blob);
   const meta = tsResultOffer.result.meta as TransactionMetadata;
 

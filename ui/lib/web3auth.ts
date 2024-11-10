@@ -28,7 +28,8 @@ export const initializeWeb3Auth = async () => {
   const web3auth = new Web3Auth(web3AuthOptions);
   const adapters = await getDefaultExternalAdapters({ options: web3AuthOptions });
   adapters.forEach((adapter: IAdapter<unknown>) => web3auth.configureAdapter(adapter));
-  
+
+
   // Initialize modal before returning
   await web3auth.initModal();
   

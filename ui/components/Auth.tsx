@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
 export default function Auth() {
-  const { isAuthenticated, login, logout, getUserInfo } = useAuth();
+  const { isAuthenticated, login, logout, getUserInfo} = useAuth();
 
   return (
     <div className="container">
