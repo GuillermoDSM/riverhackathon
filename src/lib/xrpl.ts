@@ -8,14 +8,16 @@ export const mintNFT = async (metadataUri: string) => {
     const xrplClient = new Client("wss://s.altnet.rippletest.net:51233");
     await xrplClient.connect();
 
-    const receiverSeed = "sEdVMCyp8YTvDXpU9jchFBcNaXE8suk"
+  const receiverSeed = "sEdVMCyp8YTvDXpU9jchFBcNaXE8suk"
 
   const receiver = Wallet.fromSeed(receiverSeed);
+  console.log("mata from minting...", metadataUri);
+  const hexUri = Buffer.from(metadataUri, 'utf-8').toString('hex');
 
   const transactionBlob:NFTokenMint = {
     TransactionType: "NFTokenMint",
     Account: receiver.address,
-    URI: (String(metadataUri)),
+    URI: hexUri,
     Flags: 8, // this makes the nft transferable to others
     TransferFee: 10,
     Fee: "10",
